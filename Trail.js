@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Dropdown, DropdownMenu, Form } from 'react-bootstrap';
 import { v4 as uuidv4 } from 'uuid';
 import Button from 'react-bootstrap/Button';
@@ -18,20 +18,32 @@ function Trail() {
     const[data,setdata]=useState([]);
     const[inp2,setinp2]=useState("");
     const[inp1,setinp1]=useState("");
-
+    const[data1,setdata1]=useState([])
+    
+    
+    
     
    
     const Change1= (event) =>{
-
+      console.log(event)
       event.preventDefault();
       
       setdata([...data,{ id:uuidv4() ,title:inp1,description:inp2,status:false}])
+
+     
       setinp1("");
       setinp2("");
 
+      
+
     }
+
+    useEffect(()=>{
+      setdata1(data)
+    },[data])
     const handleDelete =({id})=>{
       setdata(data.filter((y)=>y.id!==id))
+      setdata1(data)
     }
     const Com =(a)=>{
       setdata(data.map((z)=>{
@@ -62,9 +74,30 @@ function Trail() {
     })
   )}
 
+   
+
+
+  function ALL() {
+    setdata1(data);
+    document.getElementById("dropdown-autoclose-true").innerHTML="ALL"
+  }
+  
+  function JOB() {
+    setdata1(data.filter((x) => x.status === true));
+    document.getElementById("dropdown-autoclose-true").innerHTML="COMPLETED"
+  }
+  
+  function NOTJOB() {
+    setdata1(data.filter((x) => x.status === false));
+    document.getElementById("dropdown-autoclose-true").innerHTML="NOT COMPLETED"
+  }
+  
+   console.log(data1)
+
+
   return (
     <div>
-      <h2 class="he">MY TODO</h2>
+      <h2 className="he">MY TODO</h2>
       <Form onSubmit={Change1} className="for">
         <input type='text' placeholder='Enter the name' value={inp1} required className='d1' onChange={(event)=>setinp1(event.target.value)}></input>
 
@@ -78,25 +111,27 @@ function Trail() {
      <span class="sp"><h4>My todos</h4><h4 className="st">Status Filter:
      <Dropdown className="d-inline mx-2" >
                   <Dropdown.Toggle id="dropdown-autoclose-true">
-                                 all
+                                ALL
                     </Dropdown.Toggle>
                     <DropdownMenu>
-                      <DropdownItem>All</DropdownItem>
-                      <Dropdown.Item >Completed</Dropdown.Item>
-                      <Dropdown.Item >Not Completed</Dropdown.Item>
+                      <DropdownItem onClick={()=>ALL()}>All</DropdownItem>
+                      <Dropdown.Item onClick={()=>JOB()}>Completed</Dropdown.Item>
+                      <Dropdown.Item onClick={()=>NOTJOB()}>Not Completed</Dropdown.Item>
                       </DropdownMenu>  
                    </Dropdown>
       </h4></span>
       {
-        data.map((x)=> (
+        data1.map((x)=> (
+          
           <div class="container">
            <li key={x.id} class="list">
           <h6>Name:<input value={x.title}   type="text" class="inp" onChange={(event)=>event.preventDefault()}/></h6> 
           <h6>Description: <input value={x.description} type="text" class="inp" onChange={(event)=>event.preventDefault()}/></h6>
            <h6>Status
                   <Dropdown className="d-inline mx-2" >
+                 
                   <Dropdown.Toggle id="dropdown-autoclose-true">
-                                 {color(x)}
+                      {x.status ? "completed" : "not completed"}
                     </Dropdown.Toggle>
                     <DropdownMenu>
                       <Dropdown.Item onClick={()=>Com(x)}>Completed</Dropdown.Item>
@@ -104,7 +139,7 @@ function Trail() {
                       </DropdownMenu>  
                    </Dropdown>
            </h6>
-           <Button variant="primary" /* onClick={} */>EDIT</Button>
+           
            <Button variant="danger" onClick={()=> handleDelete(x)}>DELETE</Button>
 
            
